@@ -43,7 +43,6 @@ public class UserResources {
 			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 		return response;
 	}
 
