@@ -62,8 +62,15 @@ public class UserManagerImpl implements UserManager {
 		try {
 			user = userRepository.findById(id);
 			if (user.isPresent()) {
-				user.get().setFirstName(userRequest.getFirstName());
-				user.get().setLastName(userRequest.getLastName());
+				if (userRequest.getMobile() != 0) {
+					user.get().setMobile(userRequest.getMobile());
+				} else if (userRequest.getFirstName() != null) {
+					user.get().setFirstName(userRequest.getFirstName());
+				} else if (userRequest.getLastName() != null) {
+					user.get().setLastName(userRequest.getLastName());
+				} else if (userRequest.getProfession() != null) {
+					user.get().setProfession(userRequest.getProfession());
+				}
 				userRepository.saveAndFlush(user.get());
 				return user.get();
 			} else {
