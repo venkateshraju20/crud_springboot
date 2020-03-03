@@ -1,5 +1,7 @@
 package code.boot.resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -22,24 +24,30 @@ import code.boot.manager.UserManager;
 @RequestMapping("/api/user")
 public class UserResources {
 
+	Logger logger = LoggerFactory.getLogger(UserResources.class);
+
 	@Autowired
 	@Qualifier("userManagerService")
 	private UserManager userManager;
 
 	@PostMapping("/create-user")
 	public ResponseEntity<?> addUser(@RequestBody UserRequest userRequest) {
+		logger.info("Inside create user");
 		ResponseEntity<?> response = null;
 
 		try {
 			String message = userManager.createUser(userRequest);
 			if (message == null || message == "No data found") {
 				response = new ResponseEntity<>(new ResponseMessage("No data found"), HttpStatus.NOT_FOUND);
+				logger.debug("No data found");
 			} else {
 				response = new ResponseEntity<>(new ResponseMessage(message), HttpStatus.OK);
+				logger.info("User has been created");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Internal server error");
 			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -48,18 +56,22 @@ public class UserResources {
 
 	@GetMapping("/read-user")
 	public ResponseEntity<?> getUser(@RequestParam long id) {
+		logger.info("Inside read user");
 		ResponseEntity<?> response = null;
 
 		try {
 			User user = userManager.readUser(id);
 			if (user == null) {
 				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);
+				logger.debug("No user found");
 			} else {
 				response = new ResponseEntity<User>(user, HttpStatus.OK);
+				logger.info("User has been read");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Internal server error");
 			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -68,17 +80,23 @@ public class UserResources {
 
 	@PutMapping("/update-user")
 	public ResponseEntity<?> editUser(@RequestParam long id, @RequestBody UserRequest userRequest) {
+		logger.info("Inside update user");
 		ResponseEntity<?> response = null;
 
 		try {
 			User user = userManager.updateUser(id, userRequest);
+			System.out.println("User: " + user);
 			if (user == null) {
-				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);
+				logger.debug("No user found");
+				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);				
+			} else {
+				response = new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+				logger.info("User has been updated");
 			}
-			response = new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Internal server error");
 			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -87,17 +105,21 @@ public class UserResources {
 
 	@DeleteMapping("/delete-user")
 	public ResponseEntity<?> removeUser(@RequestParam long id) {
+		logger.info("Inside delete user");
 		ResponseEntity<?> response = null;
 		try {
 			String message = userManager.deleteUser(id);
 			if (message == null || message == "No user found") {
 				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);
+				logger.debug("No user found");
 			} else {
 				response = new ResponseEntity<>(new ResponseMessage(message), HttpStatus.OK);
+				logger.info("User deleted");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Internal server error");
 			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
