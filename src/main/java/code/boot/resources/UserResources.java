@@ -24,7 +24,7 @@ import code.boot.manager.UserManager;
 @RequestMapping("/api/user")
 public class UserResources {
 
-	Logger logger = LoggerFactory.getLogger(UserResources.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserResources.class);
 
 	@Autowired
 	@Qualifier("userManagerService")
