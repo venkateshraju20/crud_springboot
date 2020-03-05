@@ -1,5 +1,7 @@
 package code.boot.resources;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +90,7 @@ public class UserResources {
 			System.out.println("User: " + user);
 			if (user == null) {
 				logger.debug("No user found");
-				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);				
+				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);
 			} else {
 				response = new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
 				logger.info("User has been updated");
@@ -126,4 +128,27 @@ public class UserResources {
 		return response;
 	}
 
+	@GetMapping("/read-all-users")
+	public ResponseEntity<?> getUsers() {
+		logger.info("Inside get all users");
+		ResponseEntity<?> response = null;
+
+		try {
+			List<User> user = userManager.readUsers();
+			if (user == null) {
+				response = new ResponseEntity<>(new ResponseMessage("No users found"), HttpStatus.NOT_FOUND);
+				logger.debug("No users found");
+			} else {
+				response = new ResponseEntity<List<User>>(user, HttpStatus.OK);
+				logger.info("Fetched all users");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Internal server error");
+			response = new ResponseEntity<>(new ResponseMessage("Internal server error"),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
 }

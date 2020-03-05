@@ -1,5 +1,6 @@
 package code.boot.manager.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,5 +102,21 @@ public class UserManagerImpl implements UserManager {
 			e.printStackTrace();
 		}
 		return message;
+	}
+
+	@Override
+	public List<User> readUsers() {
+		List<User> users = userRepository.findAll();
+		try {
+			if (users.isEmpty()) {
+				return null;
+			} else {
+				return users;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return users;
 	}
 }
