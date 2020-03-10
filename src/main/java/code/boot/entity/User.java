@@ -62,10 +62,12 @@ public class User implements Serializable {
 	public User() {
 	}
 
-	public User(@NotNull @Size(max = 100) @Email String email, @NotNull @Size(min = 3, max = 100) String firstName,
-			@NotNull @Size(min = 3, max = 100) String lastName, String profession,
-			@NotNull @Digits(integer = 10, fraction = 0) long mobile) {
+	public User(@NotNull @Size(max = 100) @Email String email, @Size(min = 6, max = 100) String password,
+			@NotNull @Size(min = 3, max = 100) String firstName, @NotNull @Size(min = 3, max = 100) String lastName,
+			String profession, @NotNull @Digits(integer = 10, fraction = 0) long mobile) {
+		super();
 		this.email = email;
+		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.profession = profession;

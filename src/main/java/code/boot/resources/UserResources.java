@@ -42,6 +42,14 @@ public class UserResources {
 			if (message == null || message == "No data found") {
 				response = new ResponseEntity<>(new ResponseMessage("No data found"), HttpStatus.NOT_FOUND);
 				logger.debug("No data found");
+			} else if (message == "Email address already exists") {
+				response = new ResponseEntity<>(new ResponseMessage("Email address already exists"),
+						HttpStatus.CONFLICT);
+				logger.debug("Email address already exists");
+			} else if (message == "Mobile number already exists") {
+				response = new ResponseEntity<>(new ResponseMessage("Mobile number already exists"),
+						HttpStatus.CONFLICT);
+				logger.debug("Mobile number already exists");
 			} else {
 				response = new ResponseEntity<>(new ResponseMessage(message), HttpStatus.OK);
 				logger.info("User has been created");
@@ -87,12 +95,11 @@ public class UserResources {
 
 		try {
 			User user = userManager.updateUser(id, userRequest);
-			System.out.println("User: " + user);
 			if (user == null) {
 				logger.debug("No user found");
 				response = new ResponseEntity<>(new ResponseMessage("No user found"), HttpStatus.NOT_FOUND);
 			} else {
-				response = new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+				response = new ResponseEntity<User>(user, HttpStatus.OK);
 				logger.info("User has been updated");
 			}
 

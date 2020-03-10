@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import code.boot.entity.User;
@@ -17,6 +18,9 @@ public class UserManagerImpl implements UserManager {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private PasswordEncoder encoder;
+
 	@Override
 	public String createUser(UserRequest userRequest) {
 		String message = null;
@@ -27,10 +31,18 @@ public class UserManagerImpl implements UserManager {
 					&& userRequest.getMobile() == 0) {
 				message = "No data found";
 			} else {
-				User user = new User(userRequest.getEmail(), userRequest.getFirstName(), userRequest.getLastName(),
-						userRequest.getProfession(), userRequest.getMobile());
-				userRepository.save(user);
-				message = "User saved";
+
+				if (userRepository.existsByEmail(userRequest.getEmail())) {
+					message = "Email address already exists";
+				} else if (userRepository.existsByMobile(userRequest.getMobile())) {
+					message = "Mobile number already exists";
+				} else {
+					User user = new User(userRequest.getEmail(), encoder.encode(userRequest.getPassword()),
+							userRequest.getFirstName(), userRequest.getLastName(), userRequest.getProfession(),
+							userRequest.getMobile());
+					userRepository.save(user);
+					message = "User has been created";
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,5 +130,73 @@ public class UserManagerImpl implements UserManager {
 			e.printStackTrace();
 		}
 		return users;
+	}
+
+	@Override
+	public User loginUser(UserRequest userRequest) {
+
+		Optional<User> user = null;
+
+		try {
+			user = userRepository.findByEmail(userRequest.getEmail());
+			if (user.isPresent()) {
+				return user.get();
+			} else {
+				return null;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user.get();
+	}
+
+	@Override
+	public String resetFindUser(UserRequest userRequest) {
+		String message = null;
+
+		Optional<User> user = null;
+
+		try {
+			if (userRequest.getEmail() == null) {
+				message = "No data found";
+			} else {
+
+				user = userRepository.findByEmail(userRequest.getEmail());
+				if (user.isPresent()) {
+					message = user.get().getEmail();
+				} else {
+					message = "Email not found";
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return message;
+	}
+
+	@Override
+	public String resetPasswordUser(UserRequest userRequest) {
+		String message = null;
+
+		Optional<User> user = null;
+		try {
+			if (userRequest.getPassword() == null) {
+				message = "No data found";
+			} else {
+
+				user = userRepository.findByEmail(userRequest.getEmail());
+				if (user.isPresent()) {
+					user.get().setPassword(encoder.encode(userRequest.getPassword()));
+					userRepository.saveAndFlush(user.get());
+					message = "User password has been reset";
+				} else {
+					message = "Email not found";
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return message;
 	}
 }

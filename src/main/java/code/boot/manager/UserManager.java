@@ -16,4 +16,10 @@ public interface UserManager {
 	public String deleteUser(long id);
 
 	public List<User> readUsers();
+	
+	public User loginUser(UserRequest userRequest);
+	
+	public String resetFindUser(UserRequest userRequest);
+	
+	public String resetPasswordUser(UserRequest userRequest);
 }
