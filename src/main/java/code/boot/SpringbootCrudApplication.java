@@ -15,4 +15,5 @@ public class SpringbootCrudApplication extends SpringBootServletInitializer {
 		SpringApplication.run(SpringbootCrudApplication.class, args);
 		logger.info("--Application Started--");
 	}
+
 }

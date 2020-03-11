@@ -17,49 +17,46 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import code.boot.entity.Course;
-import code.boot.manager.impl.CoursesHardcodedService;
+import code.boot.manager.impl.CourseManagerImpl;
 
 @RestController
 @RequestMapping("/api/user")
 public class CourseResource {
 
 	@Autowired
-	private CoursesHardcodedService courseManagementService;
+	private CourseManagerImpl courseManagerImpl;
 
-	@GetMapping("/instructors/{username}/courses")
-	public List<Course> getAllCourses(@PathVariable String username) {
-		return courseManagementService.findAll();
+	@GetMapping("/courses")
+	public List<Course> getAllCourses() {
+		return courseManagerImpl.findAll();
 	}
 
-	@PostMapping("/instructors/{username}/courses")
-	public ResponseEntity<Void> createCourse(@PathVariable String username, @RequestBody Course course) {
-		Course createdCourse = courseManagementService.save(course);
-		// Location
-		// Get current resource url
-		/// {id}
+	@PostMapping("/create-course")
+	public ResponseEntity<Void> createCourse(@RequestBody Course course) {
+		Course createdCourse = courseManagerImpl.save(course);
+
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdCourse.getId())
 				.toUri();
 		return ResponseEntity.created(uri).build();
 	}
 
-	@DeleteMapping("/instructors/{username}/courses/{id}")
-	public ResponseEntity<Void> deleteCourse(@PathVariable String username, @PathVariable long id) {
-		Course course = courseManagementService.deleteById(id);
+	@DeleteMapping("/courses/{id}")
+	public ResponseEntity<Void> deleteCourse(@PathVariable long id) {
+		Course course = courseManagerImpl.deleteById(id);
 		if (course != null) {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/instructors/{username}/courses/{id}")
-	public Course getCourse(@PathVariable String username, @PathVariable long id) {
-		return courseManagementService.findById(id);
+	@GetMapping("/courses/{id}")
+	public Course getCourse(@PathVariable long id) {
+		return courseManagerImpl.findById(id);
 	}
 
-	@PutMapping("/instructors/{username}/courses/{id}")
-	public ResponseEntity<Course> updateCourse(@PathVariable String username, @PathVariable long id,
-			@RequestBody Course course) {
-		Course courseUpdated = courseManagementService.save(course);
+	@PutMapping("/courses/{id}")
+	public ResponseEntity<Course> updateCourse(@PathVariable long id, @RequestBody Course course) {
+		Course courseUpdated = courseManagerImpl.save(course);
 		return new ResponseEntity<Course>(courseUpdated, HttpStatus.OK);
 	}
 }
